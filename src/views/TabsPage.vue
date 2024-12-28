@@ -5,12 +5,12 @@
       <ion-tab-bar slot="bottom">
         <ion-tab-button tab="tab1" href="/tabs/tab1">
           <ion-icon aria-hidden="true" :icon="list" />
-          <ion-label>Tab 1</ion-label>
+          <ion-label>Photos List</ion-label>
         </ion-tab-button>
 
         <ion-tab-button tab="tab2" href="/tabs/tab2">
           <ion-icon aria-hidden="true" :icon="eye" />
-          <ion-label>Tab 2</ion-label>
+          <ion-label>Last Viewed Photo</ion-label>
         </ion-tab-button>
 
       </ion-tab-bar>

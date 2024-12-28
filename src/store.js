@@ -1,38 +1,28 @@
 import { createStore } from "vuex";
-
 const store = createStore({
   state: {
     photos: [
-      {
-        id: 1,
-        name: "Photo1",
-        description: "Lorem ipsum",
-        date: "23-12-2024",
-        location: "California",
-        url: "sraczka",
-      },
-      {
-        id: 2,
-        name: "Photo2",
-        description: "Lorem ipsum",
-        date: "23-12-2024",
-        location: "California",
-        url: "sraczka",
-      },
     ],
+    selectedPhotoId: null,
   },
   mutations: {
     addPhoto(state, photo) {
       state.photos.push(photo);
     },
-  },
-  actions: {
-    updateResults({ commit }, photos) {
-      commit("addPhoto", photos);
+    setSelectedPhotoId(state, selectedPhotoId) {
+      state.selectedPhotoId = selectedPhotoId; 
     },
   },
+  actions: {
+    setSelectedPhotoId({commit}, selectedPhotoId){
+      commit("setSelectedPhotoId", selectedPhotoId);
+    }
+  },
+
   getters: {
-    // getAllPhotos: (state) => () => {},
+    getSelectedPhoto: (state) => {
+      return state.photos.find(photo => photo.id === state.selectedPhotoId);
+    },
   },
 });
 
