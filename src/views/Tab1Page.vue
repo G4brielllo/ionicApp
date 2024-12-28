@@ -7,12 +7,20 @@
     </ion-header>
     <ion-content :fullscreen="true">
       <ion-header collapse="condense"> </ion-header>
-      <ion-list :inset="true" v-for="photo in photos" :key="photo.id">
-        <ion-item>{{ photo.name }}</ion-item>
+      <ion-list>
+        <ion-item v-for="photo in photos" :key="photo.id">
+          <ion-thumbnail slot="start">
+            <img :src="photo.url" alt="Photo" />
+          </ion-thumbnail>
+          <ion-label>
+            <h2>{{ photo.name }}</h2>
+            <p>{{ photo.description }}</p>
+          </ion-label>
+        </ion-item>
       </ion-list>
     </ion-content>
     <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-      <ion-fab-button @click="takePhoto">
+      <ion-fab-button @click="addPhoto">
         <ion-icon :icon="camera"></ion-icon>
       </ion-fab-button>
     </ion-fab>
@@ -35,6 +43,8 @@ import {
   IonFab,
   IonFabButton,
   IonIcon,
+  IonThumbnail,
+  IonLabel
 } from "@ionic/vue";
 
 const store = useStore();
@@ -42,7 +52,7 @@ const store = useStore();
 const photos = computed(() => store.state.photos);
 
 const photoUrl = ref(null);
-const takePhoto = async () => {
+const addPhoto = async () => {
   try {
     const photo = await Camera.getPhoto({
       resultType: CameraResultType.Uri,
@@ -58,9 +68,10 @@ const takePhoto = async () => {
       location: `Lat: ${position.coords.latitude}, Lng: ${position.coords.longitude}`,
       url: photo.webPath,
     };
+    console.log("sraka", newPhoto);
     store.comit("addPhoto", newPhoto);
     // photoUrl.value = photo.webPath;
-    // console.log(photo);
+    console.log("dodano zdjęcie", photo);
   } catch (error) {
     console.error("Błąd podczas robienia zdjęcia:", error);
   }

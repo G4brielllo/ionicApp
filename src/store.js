@@ -26,6 +26,11 @@ const store = createStore({
       state.photos.push(photo);
     },
   },
+  actions: {
+    updateResults({ commit }, photos) {
+      commit("addPhoto", photos);
+    },
+  },
   getters: {
     // getAllPhotos: (state) => () => {},
   },
