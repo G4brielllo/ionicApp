@@ -41,8 +41,7 @@
 
 <script setup>
 import { camera } from "ionicons/icons";
-import { ref, computed } from "vue";
-import { useStore } from "vuex";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 import { Geolocation } from "@capacitor/geolocation";
@@ -61,9 +60,9 @@ import {
   IonLabel,
   IonAlert,
 } from "@ionic/vue";
+
 const router = useRouter();
-const store = useStore();
-const photos = computed(() => store.state.photos);
+const photos = ref([]);
 
 const showAlert = ref(false);
 const currentPhoto = ref(null);
@@ -88,15 +87,16 @@ const alertButtons = [
         const position = currentPhoto.value.position;
 
         const newPhoto = {
-          id: `${store.state.photos.length + 1}`,
+          id: `${photos.value.length + 1}`,
           name: data.name,
           description: data.description,
-          date: new Date().toLocaleDateString(),
+          date: new Date().toISOString(),
           location: `Lat: ${position.coords.latitude}, Lng: ${position.coords.longitude}`,
           url: currentPhoto.value.url,
         };
 
-        store.commit("addPhoto", newPhoto);
+        photos.value.push(newPhoto);
+        savePhotosToLocalStorage();
         console.log("Dodano zdjęcie:", newPhoto);
       } else {
         console.error("Brak wymaganych danych");
@@ -104,6 +104,17 @@ const alertButtons = [
     },
   },
 ];
+
+const savePhotosToLocalStorage = () => {
+  localStorage.setItem("photos", JSON.stringify(photos.value));
+};
+
+const loadPhotosFromLocalStorage = () => {
+  const storedPhotos = localStorage.getItem("photos");
+  if (storedPhotos) {
+    photos.value = JSON.parse(storedPhotos);
+  }
+};
 
 const takePhoto = async () => {
   try {
@@ -122,13 +133,33 @@ const takePhoto = async () => {
     console.error("Błąd podczas robienia zdjęcia:", error);
   }
 };
-const checkPhotoData = (selectedPhotoId) => {
-  console.log(selectedPhotoId);
-  store.dispatch("setSelectedPhotoId", selectedPhotoId);
 
-  router.push("/tabs/tab2");
+const checkPhotoData = (selectedPhotoId) => {
+  const selectedPhoto = photos.value.find((photo) => photo.id === selectedPhotoId);
+  if (selectedPhoto) {
+    console.log("Selected photo:", selectedPhoto);
+
+    // Przekierowanie do tab2 z użyciem routera
+    router.push({
+      path: '/tabs/tab2',
+      query: {
+        id: selectedPhoto.id,
+        name: selectedPhoto.name,
+        description: selectedPhoto.description,
+        date: selectedPhoto.date,
+        location: selectedPhoto.location,
+        url: selectedPhoto.url,
+      },
+    });
+  } else {
+    console.error("Zdjęcie nie zostało znalezione.");
+  }
 };
+
+
+loadPhotosFromLocalStorage();
 </script>
+
 <style>
 h1 {
   display: flex;
